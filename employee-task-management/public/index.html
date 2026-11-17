@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Taskroom · Employee task management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <style>
+      :root {
+        --ink: #101a22;
+        --ink-2: #18262f;
+        --ink-line: #26363f;
+        --canvas: #eceef1;
+        --paper: #ffffff;
+        --text: #17212b;
+        --muted: #6a7682;
+        --line: #dde1e6;
+        --brass: #b98a3e;
+        --brass-soft: #f3ead9;
+        --high: #b4432f;
+        --med: #b98a3e;
+        --low: #3e7c6b;
+        --serif: "Fraunces", Georgia, serif;
+        --sans: "Instrument Sans", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        height: 100%;
+        font: 14px/1.5 var(--sans);
+        color: var(--text);
+        background: var(--canvas);
+        display: grid;
+        grid-template-columns: 248px 1fr;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+        background: none;
+      }
+      :focus-visible {
+        outline: 2px solid var(--brass);
+        outline-offset: 2px;
+      }
+
+      /* Sidebar */
+      aside {
+        background: var(--ink);
+        color: #c9d2d8;
+        padding: 28px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        position: sticky;
+        top: 0;
+        height: 100%;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
+        font: 600 21px var(--serif);
+        color: #fff;
+        letter-spacing: 0.2px;
+      }
+      .brand i {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: linear-gradient(145deg, #d2a55a, #9a702b);
+        display: grid;
+        place-items: center;
+        font: 600 16px var(--serif);
+        color: var(--ink);
+        font-style: normal;
+      }
+      nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      nav button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: #a9b6be;
+        text-align: left;
+        font-weight: 500;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      nav button:hover {
+        background: var(--ink-2);
+        color: #fff;
+      }
+      nav button[aria-current="true"] {
+        background: var(--ink-2);
+        color: #fff;
+        box-shadow: inset 2px 0 0 var(--brass);
+      }
+      nav svg {
+        width: 18px;
+        height: 18px;
+        flex: none;
+      }
+      nav .count {
+        margin-left: auto;
+        font-size: 12px;
+        background: var(--ink-line);
+        padding: 1px 8px;
+        border-radius: 99px;
+        color: #e7ecef;
+      }
+      nav .count.alert {
+        background: var(--high);
+        color: #fff;
+      }
+      .side-foot {
+        margin-top: auto;
+        padding: 14px;
+        border: 1px solid var(--ink-line);
+        border-radius: 12px;
+        font-size: 12.5px;
+        color: #8696a1;
+      }
+      .side-foot b {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #e7ecef;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #58b08f;
+      }
+      .dot.off {
+        background: var(--high);
+      }
+
+      /* Main */
+      main {
+        padding: 30px 40px 60px;
+        min-width: 0;
+      }
+      .top {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+      }
+      .top h1 {
+        font: 500 34px/1.1 var(--serif);
+        letter-spacing: -0.4px;
+      }
+      .top p {
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 11px;
+        font-weight: 600;
+        transition:
+          transform 0.12s,
+          background 0.15s;
+      }
+      .btn.primary {
+        background: var(--ink);
+        color: #fff;
+        box-shadow: 0 6px 16px -6px rgba(16, 26, 34, 0.55);
+      }
+      .btn.primary:hover {
+        background: #1d2f3b;
+      }
+      .btn.primary:active {
+        transform: scale(0.97);
+      }
+      .btn.ghost {
+        background: var(--paper);
+        border: 1px solid var(--line);
+      }
+      .btn.ghost:hover {
+        border-color: #c3c9d0;
+      }
+      .btn.danger {
+        background: var(--high);
+        color: #fff;
+      }
+
+      .overview {
+        display: grid;
+        grid-template-columns: minmax(260px, 1.1fr) 3fr;
+        gap: 18px;
+        margin-bottom: 26px;
+      }
+      .panel {
+        background: var(--paper);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow:
+          0 1px 0 var(--line),
+          0 18px 40px -28px rgba(16, 26, 34, 0.35);
+      }
+      .ring-wrap {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .ring {
+        --p: 0;
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+        background: conic-gradient(var(--brass) calc(var(--p) * 1%), #e9ecef 0);
+        display: grid;
+        place-items: center;
+        transition: background 0.6s;
+      }
+      .ring span {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--paper);
+        display: grid;
+        place-items: center;
+        font: 600 24px var(--serif);
+      }
+      .ring-wrap h3 {
+        font: 500 17px var(--serif);
+      }
+      .ring-wrap p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 2px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        padding: 0;
+      }
+      .stat {
+        padding: 22px 24px;
+        border-right: 1px solid var(--line);
+      }
+      .stat:last-child {
+        border: 0;
+      }
+      .stat small {
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .stat strong {
+        display: block;
+        font: 500 38px/1.15 var(--serif);
+        margin-top: 4px;
+      }
+      .stat em {
+        font-style: normal;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+
+      .tools {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .search {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+        max-width: 360px;
+      }
+      .search svg {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        translate: 0 -50%;
+        width: 16px;
+        color: var(--muted);
+      }
+      .search input {
+        width: 100%;
+        padding: 10px 14px 10px 38px;
+        border-radius: 11px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+      .chips {
+        display: flex;
+        gap: 6px;
+        background: #dfe3e8;
+        padding: 4px;
+        border-radius: 12px;
+      }
+      .chips button {
+        padding: 6px 14px;
+        border-radius: 9px;
+        font-weight: 500;
+        color: #4f5b66;
+      }
+      .chips button[aria-pressed="true"] {
+        background: var(--paper);
+        color: var(--text);
+        box-shadow: 0 1px 3px rgba(16, 26, 34, 0.12);
+      }
+
+      /* Board */
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(250px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+      .col {
+        background: #e3e6ea;
+        border-radius: 18px;
+        padding: 12px;
+        min-height: 180px;
+        transition:
+          background 0.15s,
+          outline-color 0.15s;
+        outline: 2px dashed transparent;
+      }
+      .col.over {
+        background: var(--brass-soft);
+        outline-color: var(--brass);
+      }
+      .col h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px 12px;
+        font-weight: 600;
+      }
+      .col h4 .count {
+        margin-left: auto;
+        font-weight: 500;
+        color: var(--muted);
+        font-size: 12.5px;
+      }
+      .col h4 i {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card {
+        background: var(--paper);
+        border-radius: 14px;
+        padding: 15px 16px;
+        box-shadow: 0 1px 2px rgba(16, 26, 34, 0.08);
+        cursor: grab;
+        position: relative;
+        transition:
+          box-shadow 0.15s,
+          transform 0.15s;
+      }
+      .card:hover {
+        box-shadow: 0 12px 24px -14px rgba(16, 26, 34, 0.4);
+        transform: translateY(-1px);
+      }
+      .card.dragging {
+        opacity: 0.4;
+      }
+      .card h5 {
+        font: 600 15px/1.3 var(--sans);
+        padding-right: 52px;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 4px 0 14px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .meta .due {
+        margin-left: auto;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .meta .due.late {
+        color: var(--high);
+        font-weight: 600;
+      }
+      .avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: #e8d3a8;
+        display: grid;
+        place-items: center;
+        font: 600 11px var(--sans);
+        flex: none;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 9px;
+        border-radius: 99px;
+        background: color-mix(in srgb, var(--c) 12%, white);
+        color: var(--c);
+      }
+      .tag::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+      .High {
+        --c: var(--high);
+      }
+      .Medium {
+        --c: var(--med);
+      }
+      .Low {
+        --c: var(--low);
+      }
+      .acts {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 2px;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .card:hover .acts,
+      .card:focus-within .acts,
+      .row:hover .acts {
+        opacity: 1;
+      }
+      .acts button {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+      }
+      .acts button:hover {
+        background: #eef0f3;
+        color: var(--text);
+      }
+      .acts button.del:hover {
+        background: #f8e5e1;
+        color: var(--high);
+      }
+      .acts svg {
+        width: 15px;
+      }
+
+      /* List */
+      .table {
+        background: var(--paper);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow:
+          0 1px 0 var(--line),
+          0 18px 40px -28px rgba(16, 26, 34, 0.35);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 2.4fr 1.3fr 0.9fr 1.1fr 1fr 76px;
+        gap: 14px;
+        align-items: center;
+        padding: 14px 22px;
+        border-top: 1px solid var(--line);
+      }
+      .row:first-child {
+        border: 0;
+      }
+      .row.head {
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 12.5px;
+        background: #fafbfc;
+      }
+      .row .t b {
+        display: block;
+        font-weight: 600;
+      }
+      .row .t span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .row .who {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+      }
+      .row .acts {
+        position: static;
+        opacity: 0;
+        justify-content: flex-end;
+      }
+      .pill {
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 99px;
+        background: #eef0f3;
+        justify-self: start;
+      }
+      .pill.Completed {
+        background: #e1f0ea;
+        color: #2e6a59;
+      }
+      .pill[class*="Progress"] {
+        background: var(--brass-soft);
+        color: #85601f;
+      }
+
+      /* Team */
+      .team {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .member {
+        text-align: left;
+        background: var(--paper);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 1px 0 var(--line);
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        display: block;
+        width: 100%;
+      }
+      .member:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 30px -18px rgba(16, 26, 34, 0.4);
+      }
+      .member .avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 15px;
+        margin-bottom: 12px;
+      }
+      .member h4 {
+        font: 500 20px var(--serif);
+      }
+      .member p {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .bar {
+        height: 6px;
+        border-radius: 9px;
+        background: #e9ecef;
+        margin-top: 16px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--brass);
+        border-radius: 9px;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 64px 20px;
+        color: var(--muted);
+        background: var(--paper);
+        border-radius: 18px;
+      }
+      .empty h3 {
+        font: 500 22px var(--serif);
+        color: var(--text);
+        margin-bottom: 6px;
+      }
+      .empty .btn {
+        margin-top: 18px;
+      }
+      .back {
+        margin-bottom: 16px;
+      }
+
+      /* Dialog */
+      dialog {
+        border: 0;
+        border-radius: 20px;
+        padding: 0;
+        width: min(520px, 94vw);
+        box-shadow: 0 40px 80px -20px rgba(16, 26, 34, 0.55);
+        margin: auto;
+      }
+      dialog::backdrop {
+        background: rgba(16, 26, 34, 0.5);
+        backdrop-filter: blur(3px);
+      }
+      dialog[open] {
+        animation: pop 0.2s ease-out;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.98);
+        }
+      }
+      form {
+        padding: 26px;
+      }
+      form h2 {
+        font: 500 26px var(--serif);
+        margin-bottom: 18px;
+      }
+      .f {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .f label {
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .f input,
+      .f select,
+      .f textarea {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fafbfc;
+        width: 100%;
+      }
+      .f input:focus,
+      .f select:focus,
+      .f textarea:focus {
+        border-color: var(--brass);
+        outline: 0;
+        box-shadow: 0 0 0 3px var(--brass-soft);
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .foot {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      #toasts {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        display: grid;
+        gap: 8px;
+        z-index: 9;
+      }
+      .toast {
+        background: var(--ink);
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 12px;
+        box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.5);
+        animation: pop 0.2s;
+      }
+      .toast.err {
+        background: var(--high);
+      }
+
+      @media (max-width: 1000px) {
+        body {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          position: static;
+          height: auto;
+          flex-direction: row;
+          align-items: center;
+          padding: 14px 18px;
+          overflow-x: auto;
+          gap: 16px;
+        }
+        nav {
+          flex-direction: row;
+        }
+        .side-foot {
+          display: none;
+        }
+        .brand span {
+          display: none;
+        }
+        main {
+          padding: 22px 18px 60px;
+        }
+        .overview {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .stat:nth-child(2) {
+          border-right: 0;
+        }
+        .stat:nth-child(-n + 2) {
+          border-bottom: 1px solid var(--line);
+        }
+        .board {
+          grid-template-columns: 1fr;
+        }
+        .row {
+          grid-template-columns: 1fr auto;
+        }
+        .row.head,
+        .row > :nth-child(n + 3):not(.acts) {
+          display: none;
+        }
+        .row .acts {
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <div class="brand"><i>T</i><span>Taskroom</span></div>
+      <nav id="nav"></nav>
+      <div class="side-foot">
+        <b
+          ><span class="dot" id="dot"></span
+          ><span id="conn">Connecting…</span></b
+        ><span id="apiLabel"></span>
+      </div>
+    </aside>
+    <main>
+      <div class="top">
+        <div>
+          <h1 id="title"></h1>
+          <p id="sub"></p>
+        </div>
+        <button class="btn primary" id="newBtn">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          >
+            <path d="M12 5v14M5 12h14" /></svg
+          >New task
+        </button>
+      </div>
+      <section id="view"></section>
+    </main>
+
+    <dialog id="dlg">
+      <form id="form" method="dialog">
+        <h2 id="dlgTitle">New task</h2>
+        <div class="f">
+          <label for="fTitle">Title</label
+          ><input
+            id="fTitle"
+            required
+            maxlength="80"
+            placeholder="e.g. Prepare Q4 onboarding deck"
+          />
+        </div>
+        <div class="f">
+          <label for="fDesc">Description</label
+          ><textarea
+            id="fDesc"
+            rows="3"
+            placeholder="What needs to happen?"
+          ></textarea>
+        </div>
+        <div class="two">
+          <div class="f">
+            <label for="fWho">Assigned to</label
+            ><input
+              id="fWho"
+              required
+              list="people"
+              placeholder="Employee name"
+            /><datalist id="people"></datalist>
+          </div>
+          <div class="f">
+            <label for="fDue">Due date</label
+            ><input id="fDue" type="date" required />
+          </div>
+        </div>
+        <div class="two">
+          <div class="f">
+            <label for="fPrio">Priority</label
+            ><select id="fPrio">
+              <option>High</option>
+              <option selected>Medium</option>
+              <option>Low</option>
+            </select>
+          </div>
+          <div class="f">
+            <label for="fStat">Status</label
+            ><select id="fStat">
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="foot">
+          <button type="button" class="btn ghost" id="cancel">Cancel</button
+          ><button class="btn primary" id="save">Save task</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="cdlg">
+      <form method="dialog">
+        <h2>Delete this task?</h2>
+        <p id="cText" style="color: var(--muted)"></p>
+        <div class="foot" style="margin-top: 20px">
+          <button value="no" class="btn ghost">Keep task</button
+          ><button value="yes" class="btn danger">Delete task</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toasts" role="status" aria-live="polite"></div>
+
+    <script>
+      // Same-origin when served by Express; falls back to localhost if the file is opened directly.
+      const API =
+        (location.protocol === "file:" ? "http://localhost:3000" : "") +
+        "/api/tasks";
+      const STATUSES = [
+        ["Pending", "#8A96A1"],
+        ["In Progress", "#B98A3E"],
+        ["Completed", "#3E7C6B"],
+      ];
+      const $ = (s) => document.querySelector(s);
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const ic = {
+        board: '<path d="M4 5h5v14H4zM10 5h5v9h-5zM16 5h4v6h-4z"/>',
+        list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+        team: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.8a3.4 3.4 0 010 6.4M18 14.8c1.7.7 3 2.4 3.5 5.2"/>',
+        edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+        trash: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+        search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+        cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+      };
+      const svg = (n, w = 18) =>
+        `<svg width="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic[n]}</svg>`;
+
+      let S = {
+        tasks: [],
+        view: "board",
+        q: "",
+        prio: "All",
+        member: null,
+        editing: null,
+        ok: true,
+      };
+
+      async function api(path = "", opt = {}) {
+        const r = await fetch(API + path, {
+          headers: { "Content-Type": "application/json" },
+          ...opt,
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.message || "Request failed");
+        return j;
+      }
+      function toast(m, err) {
+        const t = document.createElement("div");
+        t.className = "toast" + (err ? " err" : "");
+        t.textContent = m;
+        $("#toasts").append(t);
+        setTimeout(() => t.remove(), 3200);
+      }
+      async function load() {
+        try {
+          S.tasks = (await api()).data;
+          S.ok = true;
+        } catch (e) {
+          S.ok = false;
+        }
+        $("#dot").className = "dot" + (S.ok ? "" : " off");
+        $("#conn").textContent = S.ok ? "API connected" : "API unreachable";
+        $("#apiLabel").textContent = S.ok
+          ? "Live from " + (API.startsWith("http") ? API : location.host + API)
+          : "Start the server with npm start";
+        render();
+      }
+
+      const today = () => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+      };
+      const isLate = (t) =>
+        t.status !== "Completed" && new Date(t.dueDate) < today();
+      const fmt = (d) =>
+        d
+          ? new Date(d + "T00:00").toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })
+          : "No date";
+      const ini = (n) =>
+        String(n || "?")
+          .split(/\s+/)
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase();
+      const visible = () =>
+        S.tasks.filter(
+          (t) =>
+            (S.prio === "All" || t.priority === S.prio) &&
+            (!S.q ||
+              [t.title, t.description, t.assignedTo]
+                .join(" ")
+                .toLowerCase()
+                .includes(S.q.toLowerCase())),
+        );
+
+      function summary() {
+        const c = (s) => S.tasks.filter((t) => t.status === s).length,
+          total = S.tasks.length;
+        return {
+          total,
+          pending: c("Pending"),
+          prog: c("In Progress"),
+          done: c("Completed"),
+          late: S.tasks.filter(isLate).length,
+        };
+      }
+
+      function renderNav() {
+        const s = summary();
+        const items = [
+          ["board", "Board", "board"],
+          ["list", "All tasks", "list"],
+          ["overdue", "Overdue", "clock", s.late],
+          ["team", "Team", "team"],
+        ];
+        $("#nav").innerHTML = items
+          .map(
+            ([k, l, i, n]) =>
+              `<button data-v="${k}" aria-current="${S.view === k}">${svg(i)}${l}${n != null ? `<span class="count ${n ? "alert" : ""}">${n}</span>` : `<span class="count">${s.total}</span>`}</button>`,
+          )
+          .join("");
+        $("#nav")
+          .querySelectorAll("button")
+          .forEach(
+            (b) =>
+              (b.onclick = () => {
+                S.view = b.dataset.v;
+                S.member = null;
+                render();
+              }),
+          );
+      }
+
+      function overview() {
+        const s = summary(),
+          p = s.total ? Math.round((s.done / s.total) * 100) : 0;
+        return `<div class="overview">
+    <div class="panel ring-wrap"><div class="ring" style="--p:${p}"><span>${p}%</span></div><div><h3>Completion</h3><p>${s.done} of ${s.total} tasks finished</p></div></div>
+    <div class="panel stats">
+      <div class="stat"><small>Total</small><strong>${s.total}</strong><em>across the team</em></div>
+      <div class="stat"><small>Pending</small><strong>${s.pending}</strong><em>not started</em></div>
+      <div class="stat"><small>In progress</small><strong>${s.prog}</strong><em>being worked on</em></div>
+      <div class="stat"><small>Overdue</small><strong style="${s.late ? "color:var(--high)" : ""}">${s.late}</strong><em>${s.late ? "need attention" : "all on time"}</em></div>
+    </div></div>`;
+      }
+      function tools() {
+        return `<div class="tools"><label class="search">${svg("search", 16)}<input id="q" placeholder="Search tasks or people" value="${esc(S.q)}" aria-label="Search tasks"></label>
+  <div class="chips" role="group" aria-label="Priority">${["All", "High", "Medium", "Low"].map((p) => `<button aria-pressed="${S.prio === p}" data-p="${p}">${p}</button>`).join("")}</div></div>`;
+      }
+      const actions = (t) =>
+        `<div class="acts"><button aria-label="Edit ${esc(t.title)}" data-edit="${t.id}">${svg("edit", 15)}</button><button class="del" aria-label="Delete ${esc(t.title)}" data-del="${t.id}">${svg("trash", 15)}</button></div>`;
+      const card = (
+        t,
+      ) => `<article class="card" draggable="true" data-id="${t.id}">${actions(t)}
+  <h5>${esc(t.title)}</h5><p>${esc(t.description) || "No description"}</p>
+  <div class="meta"><span class="avatar" title="${esc(t.assignedTo)}">${ini(t.assignedTo)}</span><span class="tag ${esc(t.priority)}">${esc(t.priority)}</span>
+  <span class="due ${isLate(t) ? "late" : ""}">${svg("cal", 14)}${isLate(t) ? "Overdue · " : ""}${fmt(t.dueDate)}</span></div></article>`;
+
+      function board(list) {
+        return `<div class="board">${STATUSES.map(([s, c]) => {
+          const items = list.filter((t) => t.status === s);
+          return `<div class="col" data-status="${s}"><h4><i style="background:${c}"></i>${s}<span class="count">${items.length}</span></h4><div class="stack">${items.map(card).join("") || '<p style="color:var(--muted);padding:14px 8px;font-size:13px">Drop a task here</p>'}</div></div>`;
+        }).join("")}</div>`;
+      }
+      function table(list) {
+        if (!list.length) return empty();
+        return `<div class="table"><div class="row head"><span>Task</span><span>Assignee</span><span>Priority</span><span>Status</span><span>Due</span><span></span></div>${list
+          .map(
+            (
+              t,
+            ) => `<div class="row"><div class="t"><b>${esc(t.title)}</b><span>${esc(t.description)}</span></div>
+   <div class="who"><span class="avatar">${ini(t.assignedTo)}</span>${esc(t.assignedTo)}</div><span><span class="tag ${esc(t.priority)}">${esc(t.priority)}</span></span>
+   <span class="pill ${esc(t.status)}">${esc(t.status)}</span><span style="${isLate(t) ? "color:var(--high);font-weight:600" : ""}">${fmt(t.dueDate)}</span>${actions(t)}</div>`,
+          )
+          .join("")}</div>`;
+      }
+      const empty = (
+        h = "No tasks match",
+        p = "Try a different search, or create a new task.",
+      ) => `<div class="empty"><h3>${h}</h3><p>${p}</p></div>`;
+
+      function team() {
+        const names = [...new Set(S.tasks.map((t) => t.assignedTo))];
+        if (!names.length)
+          return empty(
+            "No team members yet",
+            "Assign a task to someone and they will appear here.",
+          );
+        return `<div class="team">${names
+          .map((n) => {
+            const m = S.tasks.filter((t) => t.assignedTo === n),
+              d = m.filter((t) => t.status === "Completed").length;
+            return `<button class="member" data-m="${esc(n)}"><span class="avatar">${ini(n)}</span><h4>${esc(n)}</h4><p>${m.length} task${m.length > 1 ? "s" : ""} · ${d} completed</p><div class="bar"><i style="width:${m.length ? (d / m.length) * 100 : 0}%"></i></div></button>`;
+          })
+          .join("")}</div>`;
+      }
+
+      async function render() {
+        renderNav();
+        const meta = {
+          board: [
+            "Board",
+            "Drag tasks between columns to update their status.",
+          ],
+          list: ["All tasks", "Every task, in one place."],
+          overdue: ["Overdue", "Past their due date and not completed."],
+          team: ["Team", "Workload by employee."],
+        }[S.view];
+        $("#title").textContent = S.member ? S.member : meta[0];
+        $("#sub").textContent = S.member
+          ? "Tasks assigned to this employee."
+          : meta[1];
+        const v = $("#view");
+        if (!S.ok) {
+          v.innerHTML = `<div class="empty"><h3>Can’t reach the task server</h3><p>Run <b>npm start</b> in the project folder, then open http://localhost:3000.</p><button class="btn primary" id="retry">Try again</button></div>`;
+          $("#retry").onclick = load;
+          return;
+        }
+        let html = "";
+        if (S.view === "team" && !S.member) html = team();
+        else {
+          let list = visible();
+          if (S.view === "overdue") list = list.filter(isLate);
+          if (S.member) list = list.filter((t) => t.assignedTo === S.member);
+          html =
+            (S.view === "board" ? overview() : "") +
+            (S.member
+              ? '<button class="btn ghost back" id="back">Back to team</button>'
+              : "") +
+            tools() +
+            (S.view === "board" && !S.member
+              ? board(list)
+              : list.length
+                ? table(list)
+                : empty(
+                    S.view === "overdue" ? "Nothing is overdue" : undefined,
+                    S.view === "overdue"
+                      ? "Every open task is still within its due date."
+                      : undefined,
+                  ));
+        }
+        v.innerHTML = html;
+        wire();
+      }
+
+      function wire() {
+        const v = $("#view");
+        v.querySelectorAll("[data-m]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              S.member = b.dataset.m;
+              S.view = "list";
+              render();
+            }),
+        );
+        const back = $("#back");
+        if (back)
+          back.onclick = () => {
+            S.member = null;
+            S.view = "team";
+            render();
+          };
+        const q = $("#q");
+        if (q)
+          q.oninput = (e) => {
+            S.q = e.target.value;
+            const pos = e.target.selectionStart;
+            render().then?.(() => {});
+            const n = $("#q");
+            n.focus();
+            n.setSelectionRange(pos, pos);
+          };
+        v.querySelectorAll("[data-p]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              S.prio = b.dataset.p;
+              render();
+            }),
+        );
+        v.querySelectorAll("[data-edit]").forEach(
+          (b) =>
+            (b.onclick = () =>
+              openForm(S.tasks.find((t) => t.id == b.dataset.edit))),
+        );
+        v.querySelectorAll("[data-del]").forEach(
+          (b) =>
+            (b.onclick = () =>
+              confirmDel(S.tasks.find((t) => t.id == b.dataset.del))),
+        );
+        v.querySelectorAll(".card").forEach((c) => {
+          c.ondragstart = (e) => {
+            e.dataTransfer.setData("text/plain", c.dataset.id);
+            c.classList.add("dragging");
+          };
+          c.ondragend = () => c.classList.remove("dragging");
+        });
+        v.querySelectorAll(".col").forEach((col) => {
+          col.ondragover = (e) => {
+            e.preventDefault();
+            col.classList.add("over");
+          };
+          col.ondragleave = () => col.classList.remove("over");
+          col.ondrop = async (e) => {
+            e.preventDefault();
+            col.classList.remove("over");
+            const t = S.tasks.find(
+              (t) => t.id == e.dataTransfer.getData("text/plain"),
+            );
+            if (!t || t.status === col.dataset.status) return;
+            try {
+              await api("/" + t.id, {
+                method: "PATCH",
+                body: JSON.stringify({ status: col.dataset.status }),
+              });
+              t.status = col.dataset.status;
+              toast(`Moved to ${t.status}`);
+              render();
+            } catch (err) {
+              toast(err.message, 1);
+            }
+          };
+        });
+      }
+
+      // Create / edit
+      const dlg = $("#dlg");
+      function openForm(t) {
+        S.editing = t || null;
+        $("#dlgTitle").textContent = t ? "Edit task" : "New task";
+        $("#fTitle").value = t?.title || "";
+        $("#fDesc").value = t?.description || "";
+        $("#fWho").value = t?.assignedTo || "";
+        $("#fDue").value = t?.dueDate || "";
+        $("#fPrio").value = t?.priority || "Medium";
+        $("#fStat").value = t?.status || "Pending";
+        $("#people").innerHTML = [...new Set(S.tasks.map((x) => x.assignedTo))]
+          .map((n) => `<option value="${esc(n)}">`)
+          .join("");
+        dlg.showModal();
+        $("#fTitle").focus();
+      }
+      $("#newBtn").onclick = () => openForm();
+      $("#cancel").onclick = () => dlg.close();
+      $("#form").onsubmit = async (e) => {
+        e.preventDefault();
+        const body = {
+          title: $("#fTitle").value.trim(),
+          description: $("#fDesc").value.trim(),
+          assignedTo: $("#fWho").value.trim(),
+          priority: $("#fPrio").value,
+          status: $("#fStat").value,
+          dueDate: $("#fDue").value,
+        };
+        try {
+          if (S.editing) {
+            await api("/" + S.editing.id, {
+              method: "PUT",
+              body: JSON.stringify(body),
+            });
+            toast("Task saved");
+          } else {
+            await api("", { method: "POST", body: JSON.stringify(body) });
+            toast("Task created");
+          }
+          dlg.close();
+          await load();
+        } catch (err) {
+          toast(err.message, 1);
+        }
+      };
+
+      // Delete
+      const cdlg = $("#cdlg");
+      let pending = null;
+      function confirmDel(t) {
+        pending = t;
+        $("#cText").textContent =
+          `“${t.title}” assigned to ${t.assignedTo} will be removed permanently.`;
+        cdlg.showModal();
+      }
+      cdlg.onclose = async () => {
+        if (cdlg.returnValue !== "yes" || !pending) return;
+        try {
+          await api("/" + pending.id, { method: "DELETE" });
+          toast("Task deleted");
+          await load();
+        } catch (err) {
+          toast(err.message, 1);
+        }
+        pending = null;
+        cdlg.returnValue = "";
+      };
+      [dlg, cdlg].forEach((d) =>
+        d.addEventListener("click", (e) => {
+          if (e.target === d) d.close();
+        }),
+      );
+      load();
+    </script>
+  </body>
+</html>

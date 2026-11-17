@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#172b25">
+  <title>Atelier Library — Your reading room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Atelier Library home">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7.5c4.4-1.7 8-.9 11 1.8v17c-3-2.7-6.6-3.5-11-1.8zM27 7.5c-4.4-1.7-8-.9-11 1.8v17c3-2.7 6.6-3.5 11-1.8z"/><path d="M16 9.3v17"/></svg></span>
+        <span><strong>atelier</strong><small>THE READING ROOM</small></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="main-nav">
+        <button class="nav-link active" data-view="all"><span class="nav-icon">▦</span> Overview <span class="nav-count" id="navAllCount">05</span></button>
+        <button class="nav-link" data-view="available"><span class="nav-icon">◉</span> Available books</button>
+      </nav>
+      <div class="side-label category-label">BROWSE BY CATEGORY</div>
+      <nav class="category-nav" id="categoryNav"></nav>
+      <div class="sidebar-bottom">
+        <div class="quote-card"><span class="quote-mark">“</span><p>A room without books is like a body without a soul.</p><small>— CICERO</small></div>
+        <div class="profile"><div class="avatar">A</div><div><strong>Library Admin</strong><small>Workspace manager</small></div><span class="profile-dots">···</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Toggle menu">☰</button>
+        <div class="breadcrumb">Workspace <span>/</span> <strong id="breadcrumbCurrent">Overview</strong></div>
+        <div class="top-actions"><span class="today-label" id="todayLabel"></span><span class="top-avatar">A</span></div>
+      </header>
+
+      <section class="page-wrap">
+        <div class="welcome-row">
+          <div><div class="eyebrow"><span class="eyebrow-line"></span> YOUR PERSONAL COLLECTION</div><h1>A thoughtful space<br>for <em>every story.</em></h1><p class="welcome-copy">Keep your collection in order. Discover what's on your shelves and make room for the next great read.</p></div>
+          <div class="hero-art" aria-hidden="true"><div class="sun-disc"></div><div class="book-stack"><i></i><i></i><i></i><i></i></div><span class="art-sparkle">✳</span><span class="art-caption">EST. FOR THE LOVE OF READING</span></div>
+        </div>
+
+        <section class="stats-grid" aria-label="Library statistics">
+          <article class="stat-card stat-primary"><div class="stat-top"><span>Total collection</span><span class="stat-icon">▤</span></div><div class="stat-number" id="totalStat">—</div><div class="stat-foot"><span class="stat-dot"></span> Books in your library</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Available now</span><span class="stat-icon sage">◉</span></div><div class="stat-number" id="availableStat">—</div><div class="stat-foot"><span class="mini-dot green"></span> Ready to be borrowed</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Currently borrowed</span><span class="stat-icon amber">↗</span></div><div class="stat-number" id="borrowedStat">—</div><div class="stat-foot"><span class="mini-dot amber-dot"></span> Out with readers</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Categories</span><span class="stat-icon lilac">⌘</span></div><div class="stat-number" id="categoryStat">—</div><div class="stat-foot"><span class="mini-dot purple"></span> Areas of knowledge</div></article>
+        </section>
+
+        <section class="collection-section">
+          <div class="section-heading"><div><div class="eyebrow">THE CATALOGUE</div><h2 id="sectionTitle">Your collection<span class="heading-period">.</span></h2><p class="section-subtitle" id="sectionSubtitle">A curated overview of the books on your shelves.</p></div><button class="primary-btn" id="addBookBtn"><span>＋</span> Add a book</button></div>
+          <div class="toolbar">
+            <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search by title..." autocomplete="off"><kbd>⌘ K</kbd></label>
+            <div class="toolbar-right"><label class="select-wrap"><span>Category</span><select id="categoryFilter"><option value="">All categories</option></select></label><label class="select-wrap"><span>Sort</span><select id="sortFilter"><option value="title">Title A–Z</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label></div>
+          </div>
+          <div class="result-line"><span id="resultCount">Showing all books</span><button class="text-btn" id="clearFilters">Clear filters <span>↗</span></button></div>
+          <div class="book-grid" id="bookGrid"><div class="loading-state"><span class="loader"></span> Arranging your shelves...</div></div>
+          <div class="empty-state hidden" id="emptyState"><div class="empty-icon">⌕</div><h3>No books found</h3><p>Try another search or clear your filters to see the full collection.</p><button class="outline-btn" id="emptyClear">Clear filters</button></div>
+          <div class="error-banner hidden" id="errorBanner"></div>
+        </section>
+        <footer class="footer"><span>ATELIER LIBRARY <i>·</i> A HOME FOR GOOD STORIES</span><span id="footerCount">YOUR COLLECTION, THOUGHTFULLY KEPT.</span></footer>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="bookModal">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><div class="eyebrow">COLLECTION DETAILS</div><h2 id="modalTitle">Add a book<span class="heading-period">.</span></h2></div><button class="icon-btn" id="closeModal" aria-label="Close">×</button></div>
+      <form id="bookForm">
+        <div class="form-grid">
+          <label class="form-field full"><span>Book title <b>*</b></span><input name="title" required maxlength="120" placeholder="e.g. The Midnight Library"></label>
+          <label class="form-field"><span>Author <b>*</b></span><input name="author" required maxlength="100" placeholder="Author's name"></label>
+          <label class="form-field"><span>Category <b>*</b></span><input name="category" required maxlength="60" list="categorySuggestions" placeholder="e.g. Fiction"><datalist id="categorySuggestions"></datalist></label>
+          <label class="form-field"><span>Published year <b>*</b></span><input name="publishedYear" type="number" min="1000" max="2026" required placeholder="2024"></label>
+          <label class="form-field"><span>Availability <b>*</b></span><select name="available" required><option value="true">Available</option><option value="false">Borrowed</option></select></label>
+        </div>
+        <div class="form-note">Fields marked * are required. Your changes are saved to the library collection.</div>
+        <div class="modal-actions"><button type="button" class="outline-btn" id="cancelModal">Cancel</button><button type="submit" class="primary-btn" id="saveBookBtn">Save book <span>↗</span></button></div>
+        <p class="form-error hidden" id="formError"></p>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="detailModal"><section class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><button class="icon-btn detail-close" id="closeDetail" aria-label="Close">×</button><div id="detailContent"></div></section></div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
